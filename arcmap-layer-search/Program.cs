@@ -1,14 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Windows.Forms;
+using ESRI.ArcGIS.esriSystem;
 
 namespace arcmap_layer_search
 {
-    class Program
+    static class Program
     {
-        [STAThread()]
-        static void Main(string[] args)
+        private static LicenseInitializer m_AOLicenseInitializer = new arcmap_layer_search.LicenseInitializer();
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
+            //ESRI License Initializer generated code.
+            m_AOLicenseInitializer.InitializeApplication(new esriLicenseProductCode[] { esriLicenseProductCode.esriLicenseProductCodeBasic },
+            new esriLicenseExtensionCode[] { esriLicenseExtensionCode.esriLicenseExtensionCodeSpatialAnalyst, esriLicenseExtensionCode.esriLicenseExtensionCodeDataInteroperability });
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+            //ESRI License Initializer generated code.
+            //Do not make any call to ArcObjects after ShutDownApplication()
+            m_AOLicenseInitializer.ShutdownApplication();
         }
     }
 }
