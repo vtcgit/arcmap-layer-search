@@ -38,11 +38,6 @@ namespace arcmap_layer_search.Views
             return false;
         }
 
-        private void Known_layers_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-
-        }
-
         private void FilterText_TextChanged(object sender, TextChangedEventArgs e)
         {
             var view = CollectionViewSource.GetDefaultView(Known_layers.ItemsSource);
