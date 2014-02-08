@@ -12,3 +12,5 @@ This idea came from Lauren Franklin who needed to locate a specific layer that s
 ### Todo ###
 Application can now read layers from single MXD layers added to the system and display their unique datasource. We will need to add the ability to add multiple sources and recursive searching of directories for MXD's in an asynchronous manner.
 
+Additionally, we will need the ability to dynamically drag and drop files into the window.
+
