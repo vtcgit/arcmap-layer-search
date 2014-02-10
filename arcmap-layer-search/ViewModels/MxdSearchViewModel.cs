@@ -10,6 +10,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.esriSystem;
 using arcmap_layer_search.Models;
+using System.ComponentModel;
 
 namespace arcmap_layer_search.ViewModels
 {
@@ -52,12 +53,12 @@ namespace arcmap_layer_search.ViewModels
         private void AddLayersFromMxd(FileInfo fileInfo)
         {
             IMapDocument pMapDoc = new MapDocumentClass();
-            pMapDoc.Open(fileInfo.FullName);
-            IDocumentInfo2 pDocInfo = (IDocumentInfo2)pMapDoc;
-            var map = pMapDoc.get_Map(0);
-            for (int i = 0; i < map.LayerCount; i++)
+            try
             {
-                try
+                pMapDoc.Open(fileInfo.FullName);
+                IDocumentInfo2 pDocInfo = (IDocumentInfo2)pMapDoc;
+                var map = pMapDoc.get_Map(0);
+                for (int i = 0; i < map.LayerCount; i++)
                 {
                     ILayer layer = (ILayer)map.get_Layer(i);
                     IDataLayer2 dataLayer = (IDataLayer2)layer;
@@ -72,14 +73,17 @@ namespace arcmap_layer_search.ViewModels
                     object[] array2 = (object[])obj2;
 
                     _knownLayers.Add(new LayerEntry(layer.Name, array2[0].ToString(), fileInfo.Name));
-                }
-                catch (Exception e)
-                {
-
+                    OnPropertyChanged(() => KnownLayers);
                 }
             }
-            pMapDoc.Close();
-            OnPropertyChanged(() => KnownLayers);
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                pMapDoc.Close();
+            }
         }
 
         #endregion
@@ -97,7 +101,12 @@ namespace arcmap_layer_search.ViewModels
                 var newFile = new FileInfo(fileDialog.FileName);
                 _mxdList.Add(newFile);
                 OnPropertyChanged(() => MxdList);
-                AddLayersFromMxd(newFile);
+                var bg = new BackgroundWorker();
+                bg.DoWork += delegate
+                {
+                    AddLayersFromMxd(newFile);
+                };
+                bg.RunWorkerAsync();
             }
         }
         private bool CommandBrowseMxdCanExecute(object sender)

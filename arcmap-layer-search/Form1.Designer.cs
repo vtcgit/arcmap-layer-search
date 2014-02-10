@@ -30,15 +30,15 @@ namespace arcmap_layer_search
         {
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.mxdSearchView1 = new arcmap_layer_search.Views.MxdSearchView();
-            this.mxdSearchView1.DataContext = new arcmap_layer_search.ViewModels.MxdSearchViewModel();
             this.SuspendLayout();
             // 
             // elementHost1
             // 
             this.elementHost1.AutoSize = true;
-            this.elementHost1.Location = new System.Drawing.Point(-2, 1);
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(88, 19);
+            this.elementHost1.Size = new System.Drawing.Size(781, 451);
             this.elementHost1.TabIndex = 0;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.mxdSearchView1;
