@@ -1,16 +1,17 @@
 arcmap-layer-search
 ===================
 
-This project is for a C# and python application that searches for specific layers in a set of MXDs
+This project is for a C# that searches for specific layers in a set of MXDs
 
 Given a specific folder, we want the ability to search all MXDs and find all known layers within those MXDs in order to locate unique layers used within each MXD.
 
-## Overview ##
+## Installation
 
-This idea came from Lauren Franklin who needed to locate a specific layer that she recently used but could not find the shared path.
+1. Ensure that ArcGIS 10.0 or greater is installed on your system.
+2. Click the "Download Zip" button on the right side of this page.
+	- or, perform a `git clone` of this repository.
+4. Navigate to the release folder and open the executable file.
+5. Open an `mxd` and use the filter text box to search.
 
-### Todo ###
-Application can now read layers from single MXD layers added to the system and display their unique datasource. We will need to add the ability to add multiple sources and recursive searching of directories for MXD's in an asynchronous manner.
-
-Additionally, we will need the ability to dynamically drag and drop files into the window.
-
+## Issues
+Please submit any issues by navigating to the Issues page of this repository.
