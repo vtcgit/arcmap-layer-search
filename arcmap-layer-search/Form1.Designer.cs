@@ -30,6 +30,7 @@ namespace arcmap_layer_search
         {
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.mxdSearchView1 = new arcmap_layer_search.Views.MxdSearchView();
+            this.mxdSearchView1.DataContext = new arcmap_layer_search.ViewModels.MxdSearchViewModel();
             this.SuspendLayout();
             // 
             // elementHost1
