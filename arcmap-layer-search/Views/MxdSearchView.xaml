@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" >
-    <StackPanel Orientation="Vertical">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
         <GroupBox Header="MXD's" Grid.Column="0">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -13,7 +13,7 @@
                     <Button Content="Browse MXD" Margin="3" Command="{Binding CommandBrowseMxd}"/>
                     <Button Content="Clear All" Margin="3" Command="{Binding CommandClearAll}"/>
                 </StackPanel>
-                <ListView x:Name="MXD_LIST" ItemsSource="{Binding Path=MxdList}" MinHeight="100" Margin="3">
+                <ListView x:Name="MXD_LIST" ItemsSource="{Binding Path=MxdList}" Margin="3">
                     <ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Remove"
@@ -44,8 +44,7 @@
                     <Label Margin="3" Content="Filter:"/>
                     <TextBox x:Name="FilterText" Margin="3" Width="150" TextChanged="FilterText_TextChanged"/>
                 </StackPanel>
-            <ListView x:Name="Known_layers" ItemsSource="{Binding Path=KnownLayers, UpdateSourceTrigger=PropertyChanged}" 
-                      MinHeight="100" Margin="3" MinWidth="200">
+            <ListView x:Name="Known_layers" ItemsSource="{Binding Path=KnownLayers, UpdateSourceTrigger=PropertyChanged}" Margin="3">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Path=MxdOrigin}">
