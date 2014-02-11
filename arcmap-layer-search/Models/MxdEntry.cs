@@ -60,7 +60,7 @@ namespace arcmap_layer_search.Models
                         object obj1 = new object[1];
                         object obj2 = new object[1];
                         propSet.GetAllProperties(out obj1, out obj2);
-
+                         
                         object[] array1 = (object[])obj1;
                         object[] array2 = (object[])obj2;
 
