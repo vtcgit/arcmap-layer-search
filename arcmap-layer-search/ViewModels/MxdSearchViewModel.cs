@@ -12,11 +12,17 @@ using ESRI.ArcGIS.esriSystem;
 using arcmap_layer_search.Models;
 using System.ComponentModel;
 using FolderSelect;
+using System.Threading;
 
 namespace arcmap_layer_search.ViewModels
 {
     public class MxdSearchViewModel : Utilities.ViewModelBase
     {
+        public MxdSearchViewModel()
+        {
+            ThreadPool.SetMaxThreads(4, 4);
+        }
+
         #region Private Variablesp
         private RelayCommand _commandBrowseMxd;
         private RelayCommand _commandBrowseFolder;
@@ -86,13 +92,19 @@ namespace arcmap_layer_search.ViewModels
 
         private void AddMxd(string filename)
         {
-            var newFile = new MxdEntry(new FileInfo(filename));
+            var newFile = new MxdEntry(new FileInfo(filename), UpdateLayersList);
             _mxdList.Add(newFile);
             OnPropertyChanged(() => MxdList);
+        }
+
+        private void FetchAllLayers()
+        {
             var bg = new BackgroundWorker();
             bg.DoWork += delegate
             {
-                newFile.FetchLayers(UpdateLayersList);
+                foreach (var mxd in _mxdList)
+                    if (mxd.KnownLayers.Count == 0)
+                        mxd.FetchLayers(null);
             };
             bg.RunWorkerAsync();
         }
@@ -113,6 +125,7 @@ namespace arcmap_layer_search.ViewModels
                 {
                     AddMxd(file);
                 }
+                FetchAllLayers();
             }
         }
         private bool CommandBrowseMxdCanExecute(object sender)
@@ -131,6 +144,7 @@ namespace arcmap_layer_search.ViewModels
                 {
                     AddMxd(file);
                 }
+                FetchAllLayers();
             }
         }
         private bool CommandBrowseFolderCanExecute(object sender)
@@ -149,7 +163,7 @@ namespace arcmap_layer_search.ViewModels
         private void CommandRemoveItemExecute(object sender)
         {
             var item = sender as MxdEntry;
-            if(item != null)
+            if (item != null)
             {
                 _mxdList.Remove(_mxdList.Find(a => a.Guid == item.Guid));
                 UpdateLayersList();

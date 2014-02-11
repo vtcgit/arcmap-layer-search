@@ -6,7 +6,7 @@
              mc:Ignorable="d" >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition MinWidth="225"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <GroupBox Header="MXD's" Grid.Column="0">

@@ -7,6 +7,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 using System.Collections.ObjectModel;
 using ESRI.ArcGIS.esriSystem;
+using System.Threading;
 
 namespace arcmap_layer_search.Models
 {
@@ -24,14 +25,17 @@ namespace arcmap_layer_search.Models
         };
 
         public delegate void FetchLayersDelegate();
+        private event FetchLayersDelegate FetchLayersEvent;
 
         private List<LayerEntry> _knownLayers = new List<LayerEntry>();
 
-        public MxdEntry(FileInfo fileInfo)
+        public MxdEntry(FileInfo fileInfo, FetchLayersDelegate updateKnownLayers)
         {
             this.MxdInfo = fileInfo;
             this.Guid = System.Guid.NewGuid().ToString();
-            Status = "Fetching...";
+            Status = "Loaded";
+            FetchLayersEvent = updateKnownLayers;
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(FetchLayers));
         }
 
         public string Guid { get; private set; }
@@ -39,7 +43,7 @@ namespace arcmap_layer_search.Models
         public string Status { get; private set; }
         public List<LayerEntry> KnownLayers { get { return _knownLayers; } }
 
-        public void FetchLayers(FetchLayersDelegate updateKnownLayers)
+        public void FetchLayers(object a)
         {
             Status = "Fetching...";
             IMapDocument pMapDoc = new MapDocumentClass();
@@ -67,13 +71,13 @@ namespace arcmap_layer_search.Models
 
                         _knownLayers.Add(new LayerEntry(layer.Name, array2[0].ToString(), MxdInfo.Name));
                         Status = string.Format("Found {0}/{1}", (i + 1), count);
-                        updateKnownLayers();
+                        FetchLayersEvent();
                     }
                     catch (Exception e)
                     {
                         _knownLayers.Add(new LayerEntry(layer.Name, "Unknown - not a feature layer", MxdInfo.Name));
                         Status = string.Format("Found {0}/{1}", (i + 1), count);
-                        updateKnownLayers();
+                        FetchLayersEvent();
                     }
                 }
             }
@@ -84,7 +88,7 @@ namespace arcmap_layer_search.Models
             finally
             {
                 pMapDoc.Close();
-                updateKnownLayers();
+                FetchLayersEvent();
             }
         }
     }
