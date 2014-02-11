@@ -11,13 +11,28 @@
         </Grid.ColumnDefinitions>
         <GroupBox Header="MXD's" Grid.Column="0">
             <StackPanel Orientation="Vertical">
-                <Button Content="Browse" Margin="3" Command="{Binding CommandBrowseMxd}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Browse" Margin="3" Command="{Binding CommandBrowseMxd}"/>
+                    <Button Content="Clear All" Margin="3" Command="{Binding CommandClearAll}"/>
+                </StackPanel>
                 <ListView x:Name="MXD_LIST" ItemsSource="{Binding Path=MxdList}" MinHeight="100" Margin="3">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Remove"
+                                      Command="{Binding CommandRemoveItem}"
+                                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Width="150">
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=MxdInfo.Name}">
                                 <GridViewColumnHeader>
                                     <Label Content="File Name"/>
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Status}">
+                                <GridViewColumnHeader>
+                                    <Label Content="Status"/>
                                 </GridViewColumnHeader>
                             </GridViewColumn>
                         </GridView>

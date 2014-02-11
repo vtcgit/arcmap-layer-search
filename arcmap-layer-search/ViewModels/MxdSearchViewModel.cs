@@ -19,14 +19,23 @@ namespace arcmap_layer_search.ViewModels
         #region Private Variablesp
         private string _name;
         private RelayCommand _commandBrowseMxd;
+        private RelayCommand _commandClearAll;
+        private RelayCommand _commandRemoveItem;
 
-        private List<FileInfo> _mxdList = new List<FileInfo>();
-        private List<LayerEntry> _knownLayers = new List<LayerEntry>();
+        private List<MxdEntry> _mxdList = new List<MxdEntry>();
         #endregion
 
         #region Properties
-        public ObservableCollection<FileInfo> MxdList { get { return new ObservableCollection<FileInfo>(_mxdList); } }
-        public ObservableCollection<LayerEntry> KnownLayers { get { return new ObservableCollection<LayerEntry>(_knownLayers); } }
+        public ObservableCollection<MxdEntry> MxdList { get { return new ObservableCollection<MxdEntry>(_mxdList); } }
+        public ObservableCollection<LayerEntry> KnownLayers
+        {
+            get
+            {
+                var list = new List<LayerEntry>();
+                _mxdList.ForEach(a => list.AddRange(a.KnownLayers));
+                return new ObservableCollection<LayerEntry>(list);
+            }
+        }
         public string LayerName
         {
             get { return _name; }
@@ -46,44 +55,32 @@ namespace arcmap_layer_search.ViewModels
                 return _commandBrowseMxd;
             }
         }
+        public RelayCommand CommandClearAll
+        {
+            get
+            {
+                if (_commandClearAll == null)
+                    _commandClearAll = new RelayCommand(CommandClearAllExecute, CommandClearAllCanExecute);
+                return _commandClearAll;
+            }
+        }
+        public RelayCommand CommandRemoveItem
+        {
+            get
+            {
+                if (_commandRemoveItem == null)
+                    _commandRemoveItem = new RelayCommand(CommandRemoveItemExecute, CommandRemoveItemCanExecute);
+                return _commandRemoveItem;
+            }
+        }
         #endregion
         #endregion
 
         #region Private Helpers
-        private void AddLayersFromMxd(FileInfo fileInfo)
+        private void UpdateLayersList()
         {
-            IMapDocument pMapDoc = new MapDocumentClass();
-            try
-            {
-                pMapDoc.Open(fileInfo.FullName);
-                IDocumentInfo2 pDocInfo = (IDocumentInfo2)pMapDoc;
-                var map = pMapDoc.get_Map(0);
-                for (int i = 0; i < map.LayerCount; i++)
-                {
-                    ILayer layer = (ILayer)map.get_Layer(i);
-                    IDataLayer2 dataLayer = (IDataLayer2)layer;
-                    IDatasetName name = (IDatasetName)dataLayer.DataSourceName;
-                    IWorkspaceName workspace = name.WorkspaceName;
-                    IPropertySet propSet = workspace.ConnectionProperties;
-                    object obj1 = new object[1];
-                    object obj2 = new object[1];
-                    propSet.GetAllProperties(out obj1, out obj2);
-
-                    object[] array1 = (object[])obj1;
-                    object[] array2 = (object[])obj2;
-
-                    _knownLayers.Add(new LayerEntry(layer.Name, array2[0].ToString(), fileInfo.Name));
-                    OnPropertyChanged(() => KnownLayers);
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            finally
-            {
-                pMapDoc.Close();
-            }
+            OnPropertyChanged(() => KnownLayers);
+            OnPropertyChanged(() => MxdList);
         }
 
         #endregion
@@ -98,18 +95,40 @@ namespace arcmap_layer_search.ViewModels
             if (result == DialogResult.OK)
             {
                 LayerName = fileDialog.SafeFileName;
-                var newFile = new FileInfo(fileDialog.FileName);
+                var newFile = new MxdEntry(new FileInfo(fileDialog.FileName));
                 _mxdList.Add(newFile);
                 OnPropertyChanged(() => MxdList);
                 var bg = new BackgroundWorker();
                 bg.DoWork += delegate
                 {
-                    AddLayersFromMxd(newFile);
+                    newFile.FetchLayers(UpdateLayersList);
                 };
                 bg.RunWorkerAsync();
             }
         }
         private bool CommandBrowseMxdCanExecute(object sender)
+        {
+            return true;
+        }
+        private void CommandClearAllExecute(object sender)
+        {
+            _mxdList.Clear();
+            UpdateLayersList();
+        }
+        private bool CommandClearAllCanExecute(object sender)
+        {
+            return MxdList.Count > 0;
+        }
+        private void CommandRemoveItemExecute(object sender)
+        {
+            var item = sender as MxdEntry;
+            if(item != null)
+            {
+                _mxdList.Remove(_mxdList.Find(a => a.Guid == item.Guid));
+                UpdateLayersList();
+            }
+        }
+        private bool CommandRemoveItemCanExecute(object sender)
         {
             return true;
         }
