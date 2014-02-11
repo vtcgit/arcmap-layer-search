@@ -78,7 +78,7 @@ namespace arcmap_layer_search.Models
             }
             catch (Exception e)
             {
-                Status = "An error occurred";
+                Status = "An error occurred"; 
             }
             finally
             {
