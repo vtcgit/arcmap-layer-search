@@ -51,9 +51,9 @@ namespace arcmap_layer_search.Models
                 for (int i = 0; i < map.LayerCount; i++)
                 {
                     ILayer layer = (ILayer)map.get_Layer(i);
-                    IDataLayer2 dataLayer = (IDataLayer2)layer;
                     try
                     {
+                        IDataLayer2 dataLayer = (IDataLayer2)layer;
                         IDatasetName name = (IDatasetName)dataLayer.DataSourceName;
                         IWorkspaceName workspace = name.WorkspaceName;
                         IPropertySet propSet = workspace.ConnectionProperties;
