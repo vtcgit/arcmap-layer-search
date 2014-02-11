@@ -11,14 +11,15 @@ using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.esriSystem;
 using arcmap_layer_search.Models;
 using System.ComponentModel;
+using FolderSelect;
 
 namespace arcmap_layer_search.ViewModels
 {
     public class MxdSearchViewModel : Utilities.ViewModelBase
     {
         #region Private Variablesp
-        private string _name;
         private RelayCommand _commandBrowseMxd;
+        private RelayCommand _commandBrowseFolder;
         private RelayCommand _commandClearAll;
         private RelayCommand _commandRemoveItem;
 
@@ -36,15 +37,6 @@ namespace arcmap_layer_search.ViewModels
                 return new ObservableCollection<LayerEntry>(list);
             }
         }
-        public string LayerName
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                OnPropertyChanged(() => LayerName);
-            }
-        }
         #region Commands
         public RelayCommand CommandBrowseMxd
         {
@@ -53,6 +45,15 @@ namespace arcmap_layer_search.ViewModels
                 if (_commandBrowseMxd == null)
                     _commandBrowseMxd = new RelayCommand(CommandBrowseMxdExecute, CommandBrowseMxdCanExecute);
                 return _commandBrowseMxd;
+            }
+        }
+        public RelayCommand CommandBrowseFolder
+        {
+            get
+            {
+                if (_commandBrowseFolder == null)
+                    _commandBrowseFolder = new RelayCommand(CommandBrowseFolderExecute, CommandBrowseFolderCanExecute);
+                return _commandBrowseFolder;
             }
         }
         public RelayCommand CommandClearAll
@@ -83,30 +84,56 @@ namespace arcmap_layer_search.ViewModels
             OnPropertyChanged(() => MxdList);
         }
 
+        private void AddMxd(string filename)
+        {
+            var newFile = new MxdEntry(new FileInfo(filename));
+            _mxdList.Add(newFile);
+            OnPropertyChanged(() => MxdList);
+            var bg = new BackgroundWorker();
+            bg.DoWork += delegate
+            {
+                newFile.FetchLayers(UpdateLayersList);
+            };
+            bg.RunWorkerAsync();
+        }
+
         #endregion
 
         #region Command Helpers
         private void CommandBrowseMxdExecute(object sender)
         {
             var fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
             fileDialog.DefaultExt = ".mxd";
             fileDialog.Filter = "ArcMap Documents (.mxd)|*.mxd";
             var result = fileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                LayerName = fileDialog.SafeFileName;
-                var newFile = new MxdEntry(new FileInfo(fileDialog.FileName));
-                _mxdList.Add(newFile);
-                OnPropertyChanged(() => MxdList);
-                var bg = new BackgroundWorker();
-                bg.DoWork += delegate
+                foreach (var file in fileDialog.FileNames)
                 {
-                    newFile.FetchLayers(UpdateLayersList);
-                };
-                bg.RunWorkerAsync();
+                    AddMxd(file);
+                }
             }
         }
         private bool CommandBrowseMxdCanExecute(object sender)
+        {
+            return true;
+        }
+        private void CommandBrowseFolderExecute(object sender)
+        {
+            var folderDialog = new FolderSelectDialog();
+            var result = folderDialog.ShowDialog();
+            if (result)
+            {
+                var fileName = folderDialog.FileName;
+                var files = Directory.GetFiles(fileName, "*.mxd", SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    AddMxd(file);
+                }
+            }
+        }
+        private bool CommandBrowseFolderCanExecute(object sender)
         {
             return true;
         }

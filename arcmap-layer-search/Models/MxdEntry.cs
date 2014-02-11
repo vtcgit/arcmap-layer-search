@@ -31,6 +31,7 @@ namespace arcmap_layer_search.Models
         {
             this.MxdInfo = fileInfo;
             this.Guid = System.Guid.NewGuid().ToString();
+            Status = "Fetching...";
         }
 
         public string Guid { get; private set; }

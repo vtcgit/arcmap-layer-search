@@ -113,6 +113,8 @@
     <Compile Include="LicenseInitializer.Designer.cs">
       <DependentUpon>LicenseInitializer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\FolderSelectDialog.cs" />
+    <Compile Include="Utilities\Reflector.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\ViewModelBase.cs" />
     <Compile Include="ViewModels\MxdSearchViewModel.cs" />
