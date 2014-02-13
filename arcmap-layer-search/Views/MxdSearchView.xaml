@@ -56,13 +56,18 @@
                             <GridViewColumnHeader>
                                 <Label Content="Name"/>
                             </GridViewColumnHeader>
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=Location}">
-                            <GridViewColumnHeader>
-                                <Label Content="Location"/>
-                            </GridViewColumnHeader>
-                        </GridViewColumn>
-                    </GridView>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Location}">
+                                <GridViewColumnHeader>
+                                    <Label Content="Location"/>
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=LayerExists}">
+                                <GridViewColumnHeader>
+                                    <Label Content="Exists"/>
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                        </GridView>
                 </ListView.View>
                 </ListView>
             </StackPanel>
